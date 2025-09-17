@@ -1,0 +1,20 @@
+# Core Web Framework
+fastapi>=0.115.12
+uvicorn[standard]>=0.34.2
+starlette==0.47.2
+itsdangerous==2.2.0  # Required by starlette SessionMiddleware
+
+# Configuration
+pydantic>=2.11.4
+pydantic-settings>=2.9.1
+
+# Authentication & Security
+authlib==1.6.3
+PyJWT==2.10.1
+
+# HTTP Client
+httpx>=0.28.1
+
+# Database
+sqlalchemy>=2.0.0
+alembic>=1.13.0

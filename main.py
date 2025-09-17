@@ -1,11 +1,29 @@
+"""
+FastAPIアプリケーションエントリポイント
+
+認証システムのメインアプリケーション
+"""
 from fastapi import FastAPI
+from starlette.middleware.sessions import SessionMiddleware
+from core.config import settings
+from contexts.users.presentation.router import router as auth_router
 
-app = FastAPI()
+# FastAPIアプリケーションインスタンス
+app = FastAPI(
+    title=settings.app_name,
+    description=settings.app_description,
+    version="1.0.0",
+    debug=settings.debug,
+)
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello World"}
+# セッションミドルウェアを追加
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.session_secret_key
+)
 
-@app.get("/hello/{name}")
-def read_hello(name: str):
-    return {"message": f"Hello {name}"}
+# ルーターを登録
+app.include_router(
+    auth_router,
+    tags=["authentication"]
+)

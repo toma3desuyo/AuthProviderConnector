@@ -1,3 +1,6 @@
+# GitHub Copilot instructions
+.github/instructions/user.instructions.md
+
 # Python
 __pycache__/
 *.py[cod]
@@ -10,8 +13,10 @@ venv/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# FastAPI
+# Environment variables
 .env
+
+# FastAPI
 *.log
 
 # IDE
@@ -24,3 +29,7 @@ pip-delete-this-directory.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# SQLite database files
+*.db
+app.db
