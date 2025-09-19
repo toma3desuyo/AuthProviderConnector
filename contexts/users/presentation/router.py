@@ -16,7 +16,7 @@ from contexts.users.application.exceptions import (
     LogoutURLGenerationError
 )
 from contexts.users.domain.exceptions import AuthRedirectGenerationError
-from schemas.auth import (
+from contexts.users.presentation.dto.auth import (
     TokenRefreshRequest,
     TokenResponse,
     LogoutResponse
