@@ -18,6 +18,7 @@ FastAPIを使用した認証システムです。Auth0を通じたGoogle OAuth2�
 │       │   └── exceptions.py   # ドメイン例外
 │       ├── application/        # アプリケーション層
 │       │   ├── services.py     # 認証サービス（ユースケース）
+│       │   ├── jwt_service.py  # JWT処理サービス
 │       │   ├── dependencies.py # FastAPI依存性注入
 │       │   └── exceptions.py   # アプリケーション例外
 │       ├── infrastructure/     # インフラストラクチャ層
@@ -26,12 +27,11 @@ FastAPIを使用した認証システムです。Auth0を通じたGoogle OAuth2�
 │       │   ├── models.py       # SQLAlchemyモデル
 │       │   └── repositories.py # リポジトリ実装
 │       └── presentation/       # プレゼンテーション層
-│           └── router.py       # APIエンドポイント
+│           ├── router.py       # APIエンドポイント
+│           └── dto/            # データ転送オブジェクト
+│               └── auth.py     # 認証関連のDTO
 ├── core/                       # 共通コア機能
-│   ├── config.py               # 設定管理（pydantic-settings）
-│   └── security.py             # JWT処理
-├── schemas/                    # Pydanticスキーマ
-│   └── auth.py                 # 認証関連のDTO
+│   └── config.py               # 設定管理（pydantic-settings）
 ├── alembic/                    # データベースマイグレーション
 │   ├── env.py                  # Alembic環境設定
 │   ├── script.py.mako          # マイグレーションテンプレート
@@ -60,6 +60,7 @@ FastAPIを使用した認証システムです。Auth0を通じたGoogle OAuth2�
 #### 2. **アプリケーション層** (`contexts/users/application/`)
 - ユースケースの実装
 - `AuthenticationService`：認証フローのオーケストレーション
+- `jwt_service`：JWT トークンの生成・検証処理
 - 依存性注入定義：FastAPIとの統合
 - アプリケーション例外：トークン処理エラーなど
 
@@ -74,6 +75,7 @@ FastAPIを使用した認証システムです。Auth0を通じたGoogle OAuth2�
 - REST APIエンドポイント
 - リクエスト/レスポンスの処理
 - FastAPIルーター定義
+- DTOスキーマ定義（Pydanticモデル）
 - OpenAPI仕様の定義
 
 ## 🔐 認証フロー

@@ -23,7 +23,7 @@ from contexts.users.domain.exceptions import (
     InvalidTokenTypeError
 )
 from core.config import settings
-from core.security import (
+from contexts.users.application.jwt_service import (
     create_access_token,
     create_refresh_token,
     verify_and_decode_refresh_token,
