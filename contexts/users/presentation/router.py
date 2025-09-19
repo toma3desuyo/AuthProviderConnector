@@ -3,6 +3,7 @@
 
 認証関連のエンドポイントを定義
 """
+import logging
 from fastapi import APIRouter, Request, Depends, HTTPException, Query
 from fastapi.responses import RedirectResponse
 from contexts.users.application.services import AuthenticationService
@@ -22,6 +23,8 @@ from schemas.auth import (
 )
 from core.config import settings
 
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth")
 
@@ -76,11 +79,19 @@ async def login(
     try:
         return await auth_service.get_login_redirect(request)
     except AuthRedirectGenerationError as e:
+        logger.error(
+            f"Auth redirect generation failed: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=503,  # Service Unavailable
             detail=f"リダイレクトURL生成に失敗しました。"
         ) from e
     except Exception as e:
+        logger.error(
+            f"Unexpected error during login: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=500,
             detail=f"ログイン処理中にエラーが発生しました。"
@@ -182,16 +193,28 @@ async def callback(
             message="認証に成功しました。APIリクエストにはaccess_tokenをBearerトークンとして使用してください。"
         )
     except (GetTokenFromProviderError, MissingIdTokenError) as e:
+        logger.error(
+            f"Provider authentication failed: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=503,  # Service Unavailable
             detail="認証に失敗しました。時間をおいて再度お試しください。"
         ) from e
     except InternalTokenCreationError as e:
+        logger.error(
+            f"Internal token creation failed: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=500,  # Internal Server Error
             detail="認証トークンの生成処理中にエラーが発生しました。"
         ) from e
     except Exception as e:
+        logger.error(
+            f"Unexpected error during callback: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=400, detail=f"認証に失敗しました。") from e
 
@@ -275,11 +298,19 @@ async def refresh_token(
             message="トークンが正常に更新されました"
         )
     except TokenRefreshError as e:
+        logger.error(
+            f"Token refresh failed: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=401,  # Unauthorized
             detail="リフレッシュトークンが無効です。再度ログインしてください。"
         ) from e
     except Exception as e:
+        logger.error(
+            f"Unexpected error during token refresh: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=400,
             detail="トークンの更新に失敗しました。"
@@ -327,8 +358,16 @@ async def logout(
             logout_url=logout_info["logout_url"]
         )
     except LogoutURLGenerationError as e:
+        logger.error(
+            f"Logout URL generation failed: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=500, detail="ログアウトURLの生成に失敗しました") from e
     except Exception as e:
+        logger.error(
+            f"Unexpected error during logout: {e}",
+            exc_info=True
+        )
         raise HTTPException(
             status_code=500, detail="ログアウト処理に失敗しました") from e
