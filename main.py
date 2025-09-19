@@ -3,10 +3,38 @@ FastAPIアプリケーションエントリポイント
 
 認証システムのメインアプリケーション
 """
+import logging
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 from core.config import settings
 from contexts.users.presentation.router import router as auth_router
+
+# 日本時間でログを記録するカスタムフォーマッタ
+class JSTFormatter(logging.Formatter):
+    """日本時間（JST）でログを出力するフォーマッタ"""
+
+    def formatTime(self, record, datefmt) -> str:
+        """時刻を日本時間でフォーマット"""
+        dt = datetime.fromtimestamp(record.created, tz=ZoneInfo('Asia/Tokyo'))
+        return dt.strftime(datefmt)
+
+# SimpleBucket形式のロギング設定（日本時間対応）
+handler = logging.StreamHandler()
+handler.setFormatter(
+    JSTFormatter(
+        fmt="%(levelname)s: %(asctime)s - %(name)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S JST"
+    )
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[handler]
+)
+
+logger = logging.getLogger(__name__)
 
 # FastAPIアプリケーションインスタンス
 app = FastAPI(
@@ -27,3 +55,7 @@ app.include_router(
     auth_router,
     tags=["authentication"]
 )
+
+# アプリケーション起動時のログ
+logger.info("Google Auth Sample starting up...")
+logger.info("Google Auth Sample started successfully")
