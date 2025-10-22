@@ -33,13 +33,13 @@ ENV UV_SYSTEM_PYTHON=1 \
     UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_CACHE_DIR=/tmp/.uv-cache \
-    VIRTUAL_ENV=/workspace/.venv
-ENV PATH="/workspace/.venv/bin:$PATH"
+    VIRTUAL_ENV=/authproviderconnector/.venv
+ENV PATH="/authproviderconnector/.venv/bin:$PATH"
 
 RUN pip install --no-cache-dir uv
 
 USER vscode
-WORKDIR /workspace
+WORKDIR /authproviderconnector
 
 ENV NPM_CONFIG_PREFIX=/home/vscode/.npm-global
 ENV PATH=$NPM_CONFIG_PREFIX/bin:$PATH

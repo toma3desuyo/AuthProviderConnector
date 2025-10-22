@@ -6,4 +6,3 @@ if [ -f .devcontainer/scripts/register-aliases.sh ]; then
 fi
 
 cd /authproviderconnector
-uv sync --no-dev

@@ -1,4 +1,8 @@
-.PHONY: format lint check migrate create-migrate
+# これらのコマンドはsource .venv/bin/activateを行った後に実行してください
+.PHONY: format lint lint-fix check migrate create-migrate
+
+install:
+	uv sync
 
 lint:
 	uv run ruff check .
