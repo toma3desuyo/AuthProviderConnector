@@ -6,14 +6,14 @@ AuthProviderConnector は Auth0 を用いて Google OAuth2 認証フローを提
 - `/api/v1/auth` 配下でのログイン開始、コールバック処理、トークンリフレッシュ、ユーザー情報取得、ログアウト URL 返却、ログアウト完了ハンドラ
 - Auth0 から受け取った ID トークンの検証後、内部アクセストークン / リフレッシュトークン（JWT）を発行しクッキーに格納
 - PostgreSQL + SQLAlchemy Async を用いたユーザー / 連携アカウントの永続化
-- DI コンテナによるコンテキスト分離（UsersContext）とユースケース駆動の実装
-- Alembic によるマイグレーション管理、`uv` ベースの依存管理、Docker / Dev Container 対応
+- DI コンテナによるコンテキスト分離（UsersContext）の実装
+- Alembic によるマイグレーション管理、`uv` ベースの依存管理、Docker 対応
 
 ## 技術スタック
 - Python 3.12 / FastAPI / Uvicorn
 - Authlib による Auth0 連携、PyJWT による内部トークン発行
 - SQLAlchemy Async + asyncpg / Alembic
-- Docker Compose, VS Code Dev Container, `uv` package manager
+- Docker Compose, `uv` package manager
 
 ## ディレクトリ構成（抜粋）
 ```
@@ -30,14 +30,6 @@ AuthProviderConnector は Auth0 を用いて Google OAuth2 認証フローを提
 └─ .devcontainer/            # VS Code Dev Container 設定
 ```
 
-## セットアップ
-1. `.env.example` をコピーして `.env` を作成し、Auth0 クライアント情報やフロントエンド URL を設定します。
-   ```bash
-   cp .env.example .env
-   # 必要に応じて編集
-   ```
-2. `AUTH0_*` 系の値（ドメイン / クライアント ID / シークレット / Audience）と、内部 JWT 用のシークレットキーを本番相当の値に差し替えてください。
-
 ### Docker Compose で起動
 1. 依存関係（uv 仮想環境を含む）は Docker イメージ内でビルド時に解決されます。
 2. 以下のコマンドで API + PostgreSQL を起動します。
@@ -46,18 +38,6 @@ AuthProviderConnector は Auth0 を用いて Google OAuth2 認証フローを提
    ```
 3. API は `http://localhost:8000` で待ち受け、ヘルスチェックは `http://localhost:8000/api/v1/health` です。OpenAPI ドキュメントは `http://localhost:8000/docs` で確認できます。
 
-### ローカル実行（Python + uv）
-1. 依存パッケージを同期します。
-   ```bash
-   uv sync
-   ```
-2. PostgreSQL をローカルに用意します。Docker Compose を併用する場合は `docker compose up postgres` として DB のみ起動できます。
-3. API を起動します。
-   ```bash
-   uv run up
-   ```
-   - `ENVIRONMENT=development` の場合はホットリロードが有効になり、`main:app` を `uvicorn` で直接起動します。
-
 ## データベースとマイグレーション
 - データベースは PostgreSQL を前提とし、SQLAlchemy Async + asyncpg で接続します。
 - 初期化後のテーブルは Alembic マイグレーションで管理します。
@@ -65,13 +45,10 @@ AuthProviderConnector は Auth0 を用いて Google OAuth2 認証フローを提
   make migrate          # 最新マイグレーションを適用
   make create-migrate m="add user table"  # 変更検出 → マイグレーション作成
   ```
-- `DB_*` 系の環境変数でプール設定や接続タイムアウトを細かく調整できます。
 
-## 品質チェック / テスト
+## 品質チェック
 - Lint: `make lint` (`ruff check .`)
 - 自動整形: `make format` (`ruff --fix` + `ruff format`)
-- 型チェック: `uv run mypy .`
-- テスト: `uv run pytest`
 
 ## API エンドポイント概要
 | メソッド | パス | 説明 |
@@ -92,10 +69,3 @@ AuthProviderConnector は Auth0 を用いて Google OAuth2 認証フローを提
   - `Login/Callback/Refresh/Logout/GetAuthenticatedUser` 各ユースケース
 - 内部 JWT は HS256 で署名され、アクセストークンは `Authorization: Bearer` で利用、リフレッシュトークンは HttpOnly クッキーとして保存されます。
 - DB モデルは `users` と `linked_accounts` テーブルで構成され、Auth0 側のユーザー（sub）を `linked_accounts` として紐づけます。
-
-## 開発コンテナ
-`.devcontainer/` に VS Code Dev Container の定義を同梱しています。`Dev Containers: Open Folder in Container...` で開くと Docker Compose を使ってツールチェーンが事前にセットアップされます。
-
-## 補足
-- 既定のシークレットキーやドメイン値はローカル検証用です。本番環境では必ず安全な値に置き換えてください。
-- 追加の外部プロバイダを接続する場合は `UsersContextFactory` に新しいクライアント実装を差し替えることで対応できます。
