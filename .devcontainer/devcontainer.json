@@ -2,7 +2,7 @@
   "name": "authproviderconnector",
   "dockerComposeFile": "compose.yaml",
   "service": "authproviderconnector",
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/authproviderconnector",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1.6.3": {}

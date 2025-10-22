@@ -35,6 +35,7 @@ ENV UV_LINK_MODE=copy \
     UV_CONCURRENT_DOWNLOADS=4 \
     UV_FROZEN=1 \
     UV_CACHE_DIR=/tmp/.uv-cache \
+    UV_NO_SYNC=1 \
     PYTHONUNBUFFERED=1
 
 USER appuser

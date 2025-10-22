@@ -5,5 +5,5 @@ if [ -f .devcontainer/scripts/register-aliases.sh ]; then
   bash .devcontainer/scripts/register-aliases.sh
 fi
 
-cd /workspace
+cd /authproviderconnector
 uv sync --no-dev
