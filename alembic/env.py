@@ -1,48 +1,56 @@
+import os
+import sys
 from logging.config import fileConfig
+from pathlib import Path
+
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from contexts.users.infrastructure.models import Base
-from contexts.users.infrastructure.database import engine
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
+# プロジェクトのルート（src ディレクトリ）をパスに追加してアプリのモジュールを解決する
+PROJECT_SRC = Path(__file__).resolve().parents[1] / "src"
+if str(PROJECT_SRC) not in sys.path:
+    sys.path.append(str(PROJECT_SRC))
+
+# Alembic が使用する設定オブジェクト
 config = context.config
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
+# logging 設定
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
+# Alembic の自動生成対象となるメタデータ
+from models import Base  # noqa: E402
+
 target_metadata = Base.metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+
+def prevent_empty_migrations(context, revision, directives) -> None:
+    """変更がない状態で空のマイグレーションが生成されるのを防ぐ。"""
+    if not directives:
+        return
+    directive = directives[0]
+    if hasattr(directive, "upgrade_ops") and directive.upgrade_ops.is_empty():
+        raise ValueError(
+            "No schema changes detected; refusing to create empty migration."
+        )
+
+
+# デフォルトは alembic.ini の設定を利用しつつ、環境変数で上書きできるようにする
+DEFAULT_DATABASE_URL = config.get_main_option("sqlalchemy.url")
+DATABASE_URL = os.environ.get("DATABASE_URL", DEFAULT_DATABASE_URL)
 
 
 def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
-    """
-    url = config.get_main_option("sqlalchemy.url")
+    """Run migrations in 'offline' mode."""
     context.configure(
-        url=url,
+        url=DATABASE_URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
+        compare_server_default=True,
+        process_revision_directives=prevent_empty_migrations,
     )
 
     with context.begin_transaction():
@@ -50,15 +58,23 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
+    """Run migrations in 'online' mode."""
+    configuration = config.get_section(config.config_ini_section, {})
+    configuration["sqlalchemy.url"] = DATABASE_URL
 
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
+    connectable = engine_from_config(
+        configuration,
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
 
-    """
-    with engine.connect() as connection:
+    with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+            compare_server_default=True,
+            process_revision_directives=prevent_empty_migrations,
         )
 
         with context.begin_transaction():
