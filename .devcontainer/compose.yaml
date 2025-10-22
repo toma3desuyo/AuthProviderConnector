@@ -1,0 +1,13 @@
+services:
+  authproviderconnector:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ..:/workspace:cached
+      - ${HOME}/.gitconfig:/home/vscode/.gitconfig:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    tty: true
+    working_dir: /workspace
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

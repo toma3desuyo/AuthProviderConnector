@@ -1,0 +1,39 @@
+{
+  "name": "authproviderconnector",
+  "dockerComposeFile": "compose.yaml",
+  "service": "authproviderconnector",
+  "workspaceFolder": "/workspace",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1.6.3": {}
+  },
+  "forwardPorts": [
+    8000
+  ],
+  "portsAttributes": {
+    "8000": {
+      "label": "AuthProviderConnector API"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "remote.autoForwardPorts": false,
+        "files.exclude": {
+          "**/__pycache__": true
+        }
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "EditorConfig.EditorConfig",
+        "ms-vscode.makefile-tools",
+        "tamasfe.even-better-toml",
+        "shd101wyy.markdown-preview-enhanced",
+        "ms-vscode.live-server"
+      ]
+    }
+  }
+}
