@@ -30,3 +30,4 @@ ENV
 *.swo
 *~
 .DS_Store
+.venv

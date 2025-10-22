@@ -1,35 +1,18 @@
-# GitHub Copilot instructions
-.github/instructions/user.instructions.md
-
-# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Environment variables
+*.pyc
+.venv/
+uv.lock.bak
+.dmypy.json
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
 .env
-
-# FastAPI
-*.log
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
+.env.*
 .DS_Store
-Thumbs.db
-
-# SQLite database files
-*.db
-app.db
+.idea/
+.vscode/
+pgadmin-data/
+postgres-data/
+api-venv/
+*.egg-info/
