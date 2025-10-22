@@ -15,3 +15,4 @@ htmlcov/
 pgadmin-data/
 postgres-data/
 api-venv/
+*.egg-info/
