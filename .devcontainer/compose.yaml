@@ -4,7 +4,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ..:/workspace:cached
+      - ..:/workspace
       - ${HOME}/.gitconfig:/home/vscode/.gitconfig:ro
       - /var/run/docker.sock:/var/run/docker.sock
     tty: true

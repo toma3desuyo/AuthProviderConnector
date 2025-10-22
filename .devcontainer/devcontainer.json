@@ -8,10 +8,10 @@
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1.6.3": {}
   },
   "forwardPorts": [
-    8000
+    4000
   ],
   "portsAttributes": {
-    "8000": {
+    "4000": {
       "label": "AuthProviderConnector API"
     }
   },
