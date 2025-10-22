@@ -1,22 +1,13 @@
-.PHONY: install format lint check test migrate create-migrate
-
-install:
-	uv sync --frozen
+.PHONY: format lint check migrate create-migrate
 
 lint:
-	PYTHONPATH=src uv run ruff check .
+	uv run ruff check .
 
 lint-fix:
-	PYTHONPATH=src uv run ruff check . --fix
+	uv run ruff check . --fix
 
 format:
-	PYTHONPATH=src uv run ruff check . --fix && uv run ruff format .
-
-check:
-	PYTHONPATH=src uv run ruff check . && uv run ruff format --check . && uv run mypy src
-
-test:
-	PYTHONPATH=src uv run pytest
+	uv run ruff check . --fix && uv run ruff format .
 
 migrate:
 	@docker compose exec -T api uv run alembic upgrade head
